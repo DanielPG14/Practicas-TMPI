@@ -142,7 +142,7 @@ while True:
 		bg = cv2.cvtColor(frameAux,cv2.COLOR_BGR2GRAY)
 	if k == 27:
 		break
-	
+	#apodpdakspdasda
 # cap.release()
 video.release()
 cv2.destroyAllWindows()
