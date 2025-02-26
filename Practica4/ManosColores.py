@@ -78,3 +78,5 @@ else:
 
 video.release()            
 cv2.destroyAllWindows()
+print("Fin del programa")
+#Hola
