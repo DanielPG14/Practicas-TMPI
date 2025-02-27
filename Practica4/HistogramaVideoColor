@@ -19,7 +19,8 @@ else:
         ax.set_xlabel("Intensidad de pixel")
         ax.set_ylabel("Frecuencia")
         colores=("b","g","r")
-        for (canal,color) in zip (canales_de_color,colores):
+        #Se recorre cada canal de color y se calcula el histograma de cada color
+        for (canal,color) in zip (canales_de_color,colores): #Zip es para recorrer dos listas al mismo tiempo
             hist=cv2.calcHist([canal],[0], None, [256], [0,256])
             ax.plot(hist,color=color)
         #Metodo para mostrar la grafica
