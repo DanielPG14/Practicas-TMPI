@@ -1,0 +1,35 @@
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+video = cv2.VideoCapture(0)
+plt.ion()#Activa el modo interactivo
+fig,ax=plt.subplots()#Se inicializa la grafica
+
+if video is None:
+    print("Sin video")
+else:
+    while True:
+        ret,frame=video.read()
+        canales_de_color=cv2.split(frame)#Se divide el frame en canales de color
+        #limpiar el grafico
+        ax.clear()
+        ax.set_xlim([0,256])
+        ax.set_title("Histograma")
+        ax.set_xlabel("Intensidad de pixel")
+        ax.set_ylabel("Frecuencia")
+        colores=("b","g","r")
+        for (canal,color) in zip (canales_de_color,colores):
+            hist=cv2.calcHist([canal],[0], None, [256], [0,256])
+            ax.plot(hist,color=color)
+        #Metodo para mostrar la grafica
+        plt.pause(0.001)
+        cv2.imshow("video",frame)
+        key=cv2.waitKey(1)
+        if key==ord('q'):
+            break
+
+video.release()
+cv2.destroyAllWindows()
+plt.ioff()#Desactiva el modo interactivo
+plt.show()#Ultia grafica
