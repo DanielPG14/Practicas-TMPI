@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 import imutils
 
-#cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
-# cap = cv2.VideoCapture('videoEntrada.mp4')
+
 video = cv2.VideoCapture(0)
 bg = None
+
 
 # COLORES PARA VISUALIZACIÓN
 color_start = (204,204,0)
@@ -23,9 +23,7 @@ color_ymin = (0,130,255) # Punto más alto del contorno
 color_fingers = (0,255,255)
 
 while True:
-	#ret, frame = cap.read()
-	#if ret == False: break
-
+	
 	# Redimensionar la imagen para que tenga un ancho de 640
 	ref, frame = video.read()
 	frame = imutils.resize(frame,width=640) 	
@@ -54,7 +52,7 @@ while True:
 
 		for cnt in cnts:
 
-			# Encontrar el centro del contorno
+			# Encontrar el centro del contorno th
 			M = cv2.moments(cnt)
 			if M["m00"] == 0: M["m00"]=1
 			x = int(M["m10"]/M["m00"])
@@ -78,7 +76,7 @@ while True:
 
 				inicio = [] # Contenedor en donde se almacenarán los puntos iniciales de los defectos convexos
 				fin = [] # Contenedor en donde se almacenarán los puntos finales de los defectos convexos
-				fingers = 0 # Contador para el número de dedos levantados
+
 
 				for i in range(defects.shape[0]):
 		
@@ -106,43 +104,22 @@ while True:
 						fin.append(end)
 						
 						# Visualización de distintos datos obtenidos
-						#cv2.putText(ROI,'{}'.format(angulo),tuple(far), 1, 1.5,color_angulo,2,cv2.LINE_AA)
-						#cv2.putText(ROI,'{}'.format(d),tuple(far), 1, 1.1,color_d,1,cv2.LINE_AA)
 						cv2.circle(ROI,tuple(start),5,color_start,2)
 						cv2.circle(ROI,tuple(end),5,color_end,2)
 						cv2.circle(ROI,tuple(far),7,color_far,-1)
-						#cv2.line(ROI,tuple(start),tuple(far),color_start_far,2)
-						#cv2.line(ROI,tuple(far),tuple(end),color_far_end,2)
-						#cv2.line(ROI,tuple(start),tuple(end),color_start_end,2)
 
-				# Si no se han almacenado puntos de inicio (o fin), puede tratarse de
-				# 0 dedos levantados o 1 dedo levantado
-				if len(inicio)==0:
-					minY = np.linalg.norm(ymin[0]-[x,y])
-					if minY >= 110:
-						fingers = fingers +1
-						cv2.putText(ROI,'{}'.format(fingers),tuple(ymin[0]), 1, 1.7,(color_fingers),1,cv2.LINE_AA)
-					
-				# Si se han almacenado puntos de inicio, se contará el número de dedos levantados
-				for i in range(len(inicio)):
-					fingers = fingers + 1
-					cv2.putText(ROI,'{}'.format(fingers),tuple(inicio[i]), 1, 1.7,(color_fingers),1,cv2.LINE_AA)
-					if i == len(inicio)-1:
-						fingers = fingers + 1
-						cv2.putText(ROI,'{}'.format(fingers),tuple(fin[i]), 1, 1.7,(color_fingers),1,cv2.LINE_AA)
-				
-				# Se visualiza el número de dedos levantados en el rectángulo izquierdo
-				cv2.putText(frame,'{}'.format(fingers),(390,45), 1, 4,(color_fingers),2,cv2.LINE_AA)
-				
+
 		cv2.imshow('th',th)
 	cv2.imshow('Frame',frame)
+	
 
 	k = cv2.waitKey(20)
+	
 	if k == ord('i'):
 		bg = cv2.cvtColor(frameAux,cv2.COLOR_BGR2GRAY)
-	if k == 27:
+	if k == ord('q'):
 		break
-	#apodpdakspdasda
+	
 # cap.release()
 video.release()
 cv2.destroyAllWindows()
