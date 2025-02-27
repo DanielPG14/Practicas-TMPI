@@ -104,9 +104,9 @@ while True:
         red_res = cv2.bitwise_and(ROI, ROI, mask=mask_red)  # Aplicar la máscara a la ROI
         red_cnts, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        #Histograma 
+        #Histograma
         canales_de_color=cv2.split(frame)#Se divide el frame en canales de color
-        canales_de_colorROI=cv2.split(frame)#Se divide el ROI en canales de color
+        canales_de_colorROI=cv2.split(ROI)#Se divide el ROI en canales de color
         #Subgrafica para ver el video completo
         ax[0,0].clear()#Limpiar la subgrafica
         ax[0,0].imshow(frame)
@@ -126,7 +126,7 @@ while True:
         ax[1,0].clear()#Limpiar la subgrafica
         ax[1,0].imshow(ROI)
         ax[1,0].axis('off')
-        ax[1,0].set_title("Video de sección de la mano")
+        ax[1,0].set_title("Video mano")
         #Subgrafica para ver el histograma de la sección ROI
         ax[1,1].clear()
         ax[1,1].set_xlim([0,256])
@@ -136,7 +136,8 @@ while True:
         for (canal,color) in zip (canales_de_colorROI,colores): #Zip es para recorrer dos listas al mismo tiempo
             hist=cv2.calcHist([canal],[0], None, [256], [0,256])
             ax[1,1].plot(hist,color=color)
-        
+        plt.pause(0.001)
+
         # Dibujar contornos rojos detectados
         for red_cnt in red_cnts:
             if cv2.contourArea(red_cnt) > 500:  # Filtrar contornos pequeños
@@ -148,6 +149,7 @@ while True:
     cv2.imshow('Frame', frame)
 
     k = cv2.waitKey(20)
+    print("Se presiono{k}")
 
     if k == ord('i') and bg is None:  # Solo inicializar el fondo una vez
         bg = cv2.cvtColor(frameAux, cv2.COLOR_BGR2GRAY)
@@ -156,3 +158,5 @@ while True:
 
 video.release()
 cv2.destroyAllWindows()
+plt.ioff()#Desactiva modo interactivo
+plt.show()#Muestra la ultima grafica
