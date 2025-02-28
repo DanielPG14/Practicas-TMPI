@@ -28,15 +28,17 @@ if video is None:
 else:
     while True:
         ret,frame=video.read()
-        frame = imutils.resize(frame, width=640, height=580) # Redimensionar el video
+        frame = imutils.resize(frame, width=640) # Redimensionar el video
         frame = cv2.flip(frame, 1) # Espejo de la imagen
         frameAux = frame.copy()
+
         CuadroI = frame[50:300, 380:550] # Región de interés
         cv2.rectangle(frame, (380, 50), (550, 300), (170,95,92),1)#Recibe imagen, coordenadas, color y grosor
         GrisCuadroI=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2GRAY)#Convertir a escala de grises
 
         FCI=cv2.cvtColor(frameAux,cv2.COLOR_BGR2GRAY)
         Fondo_CuadroI=FCI[50:300, 380:550]#Recorte de la imagen de fondo
+        
         Difer=cv2.absdiff(GrisCuadroI,Fondo_CuadroI)#Diferencia entre la imagen de fondo y la actual
         _, masc_sob = cv2.threshold(Difer, 30, 255, cv2.THRESH_BINARY) #Umbralización mediante mascara sobel
         masc_sob = cv2.medianBlur(masc_sob, 7) #Aplicar filtro de suavizado
