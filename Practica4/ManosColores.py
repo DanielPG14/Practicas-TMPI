@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 video = cv2.VideoCapture(0)
 plt.ion()#Activa el modo interactivo
 fig,ax=plt.subplots(2,2)#Se inicializa la grafica
-FCI=None
 
 # Definir los rangos de colores en HSV
 Amar_bajo = np.array([15, 100, 100], np.uint8)
@@ -28,16 +27,22 @@ if video is None:
     print("No se encontro imagen")
 else:
     while True:
+        ret,frame=video.read()
+        frame = cv2.flip(frame, 1)
         CuadroI = frame[50:300, 380:600]
         cv2.rectangle(frame, (380, 50), (600, 300), (170,95,92),1)#Recibe imagen, coordenadas, color y grosor
         GCuadroI=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2GRAY)#Convertir a escala de grises
+        FCI=cv2.cvtColor(frame.copy(),cv2.COLOR_BGR2GRAY)
         Fondo_CuadoI=FCI[50:300, 380:600]#Recorte de la imagen de fondo
         Difer=cv2.absdiff(GCuadroI,Fondo_CuadoI)#Diferencia entre la imagen de fondo y la actual
         mascara_umbral_adaptativo=cv2.adaptiveThreshold(Difer,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,11,2)#Umbralización de la imagen
+        
+        cv2.imshow("Video Original",frame)
+        cv2.imshow("Mano",GCuadroI)
+        cv2.imshow("Mano",FCI)
         cv2.imshow("Sustracción del fondo",Difer)
         cv2.imshow("Umbralización",mascara_umbral_adaptativo)
 
-        ret,frame=video.read()
         #Mascara borde Canny
         imagen_HSV=cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         imagen_gris=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
