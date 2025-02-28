@@ -28,20 +28,24 @@ if video is None:
 else:
     while True:
         ret,frame=video.read()
-        frame = cv2.flip(frame, 1)
-        CuadroI = frame[50:300, 380:600]
-        cv2.rectangle(frame, (380, 50), (600, 300), (170,95,92),1)#Recibe imagen, coordenadas, color y grosor
-        GCuadroI=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2GRAY)#Convertir a escala de grises
-        FCI=cv2.cvtColor(frame.copy(),cv2.COLOR_BGR2GRAY)
-        Fondo_CuadoI=FCI[50:300, 380:600]#Recorte de la imagen de fondo
-        Difer=cv2.absdiff(GCuadroI,Fondo_CuadoI)#Diferencia entre la imagen de fondo y la actual
-        mascara_umbral_adaptativo=cv2.adaptiveThreshold(Difer,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,11,2)#Umbralización de la imagen
-        
+        frame = imutils.resize(frame, width=640, height=580) # Redimensionar el video
+        frame = cv2.flip(frame, 1) # Espejo de la imagen
+        frameAux = frame.copy()
+        CuadroI = frame[50:300, 380:550] # Región de interés
+        cv2.rectangle(frame, (380, 50), (550, 300), (170,95,92),1)#Recibe imagen, coordenadas, color y grosor
+        GrisCuadroI=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2GRAY)#Convertir a escala de grises
+
+        FCI=cv2.cvtColor(frameAux,cv2.COLOR_BGR2GRAY)
+        Fondo_CuadroI=FCI[50:300, 380:550]#Recorte de la imagen de fondo
+        Difer=cv2.absdiff(GrisCuadroI,Fondo_CuadroI)#Diferencia entre la imagen de fondo y la actual
+        _, masc_sob = cv2.threshold(Difer, 30, 255, cv2.THRESH_BINARY) #Umbralización mediante mascara sobel
+        masc_sob = cv2.medianBlur(masc_sob, 7) #Aplicar filtro de suavizado
+
         cv2.imshow("Video Original",frame)
-        cv2.imshow("Mano",GCuadroI)
-        cv2.imshow("Mano",FCI)
+        cv2.imshow("Mano",GrisCuadroI)
+        cv2.imshow("FC",Fondo_CuadroI)
         cv2.imshow("Sustracción del fondo",Difer)
-        cv2.imshow("Umbralización",mascara_umbral_adaptativo)
+        cv2.imshow("Umbralización",masc_sob)
 
         #Mascara borde Canny
         imagen_HSV=cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
