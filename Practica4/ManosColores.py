@@ -8,6 +8,9 @@ plt.ion()#Activa el modo interactivo
 fig,ax=plt.subplots(2,2)#Se inicializa la grafica
 FCI=None
 Fondo_Blanco=False
+ultimo_contorno = None
+contador = 0
+umbral_estabilidad = 5
 
 # Definir los rangos de colores en HSV
 Amar_bajo = np.array([20, 50, 50], np.uint8)
@@ -78,7 +81,15 @@ else:
             (contornosR,_) = cv2.findContours(bordes_cannyR.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for c in contornosR:
                 if cv2.contourArea(c) > 500:
-                    cv2.drawContours(CuadroI, contornosR, -1, (0,0,255), 2)
+                    if ultimo_contorno is None or cv2.matchShapes(ultimo_contorno, c, 1, 0.0) > 0.1:  # Si hay diferencia significativa en forma
+                        contador = 0  # Reiniciar contador si el contorno cambia
+                    else:
+                        contador += 1  # Incrementar contador si el contorno es similar al anterior
+            
+                    if contador > umbral_estabilidad:
+                        cv2.drawContours(CuadroI, contornosR, -1, (0, 0, 255), 2)
+                    
+                    ultimo_contorno = c
 
             #Bordes Canny y contornos azul
             imagen_gris_A = cv2.cvtColor(mascara_azulbis, cv2.COLOR_BGR2GRAY) 
