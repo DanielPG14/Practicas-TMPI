@@ -7,10 +7,6 @@ video = cv2.VideoCapture(0)
 plt.ion()#Activa el modo interactivo
 fig,ax=plt.subplots(2,2)#Se inicializa la grafica
 FCI=None
-Fondo_Blanco=False
-ultimo_contorno = None
-contador = 0
-umbral_estabilidad = 5
 
 # Definir los rangos de colores en HSV
 Amar_bajo = np.array([20, 50, 50], np.uint8)
@@ -41,17 +37,9 @@ else:
         frame = cv2.flip(frame, 1) # Espejo de la imagen
         frameAux = frame.copy()
 
-        if FCI is not None and Fondo_Blanco is True:
+        if FCI is not None:
             CuadroI = frame[50:300, 380:550] # Región de interés
             cv2.rectangle(frame, (380, 50), (550, 300), (170,95,92),1)#Recibe imagen, coordenadas, color y grosor
-            GrisCuadroI=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2GRAY)#Convertir a escala de grises
-
-            Fondo_CuadroI=FCI[50:300, 380:550]#Recorte de la imagen de fondo
-
-            Difer=cv2.absdiff(GrisCuadroI,Fondo_CuadroI)#Diferencia entre la imagen de fondo y la actual
-            _, masc_sob = cv2.threshold(Difer, 30, 255, cv2.THRESH_BINARY) #Umbralización mediante mascara sobel
-            masc_sob = cv2.medianBlur(masc_sob, 7) #Aplicar filtro de suavizado
-            cv2.imshow("Mascara",masc_sob)
 
             #Mascara borde Canny
             imagen_HSV=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2HSV)#Convertir cuadro a HSV
@@ -81,15 +69,7 @@ else:
             (contornosR,_) = cv2.findContours(bordes_cannyR.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for c in contornosR:
                 if cv2.contourArea(c) > 500:
-                    if ultimo_contorno is None or cv2.matchShapes(ultimo_contorno, c, 1, 0.0) > 0.1:  # Si hay diferencia significativa en forma
-                        contador = 0  # Reiniciar contador si el contorno cambia
-                    else:
-                        contador += 1  # Incrementar contador si el contorno es similar al anterior
-            
-                    if contador > umbral_estabilidad:
-                        cv2.drawContours(CuadroI, contornosR, -1, (0, 0, 255), 2)
-                    
-                    ultimo_contorno = c
+                    cv2.drawContours(CuadroI, contornosR, -1, (0,0,255), 2)
 
             #Bordes Canny y contornos azul
             imagen_gris_A = cv2.cvtColor(mascara_azulbis, cv2.COLOR_BGR2GRAY) 
@@ -117,23 +97,36 @@ else:
             for c in contornosY:
                 if cv2.contourArea(c) > 500:
                     cv2.drawContours(CuadroI, contornosY, -1, (0,255,255), 2)
-        
-        if FCI is not None and Fondo_Blanco is False:
-            CuadroIP=frame[50:300, 380:550]
-            cv2.rectangle(frame, (380, 50), (550, 300), (92,95,170),1)
-            HSVCuadroI=cv2.cvtColor(CuadroI,cv2.COLOR_BGR2HSV)
-            Fondo_HSV=FCI[50:300, 380:550]
 
-            piel=cv2.inRange(HSVCuadroI,piel_bajo,piel_alto)
-            piel=cv2.medianBlur(piel,5)
-            piel = cv2.GaussianBlur(piel, (7, 7), 0)
-            (contornosMano,_) = cv2.findContours(piel.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            if contornosMano:
-                c = max(contornosMano, key=cv2.contourArea)  # Tomar el contorno más grande
-                if cv2.contourArea(c) > 1000:  # Evitar detecciones pequeñas
-                    cv2.drawContours(frame, [c + (380, 50)], -1, (0, 255, 0), 2)
-            cv2.imshow("Mascara", HSVCuadroI)
-            cv2.imshow("Detección de Piel", piel)
+            #Histograma
+            canales_de_color=cv2.split(frame)#Se divide el frame en canales de color
+            canales_de_color_cuadro=cv2.split(CuadroI)#Se divide el ROI en canales de color
+            #Subgrafica para ver el video completo
+            ax[0,0].clear()#Limpiar la subgrafica
+            ax[0,0].imshow(frame)
+            ax[0,0].axis('off')
+            ax[0,0].set_title("Video completo")
+            #Subgrafica para ver el histograma del video completo
+            ax[0,1].clear()
+            ax[0,1].set_xlim([0,256])
+            ax[0,1].set_title("Histograma del video completo")
+            colores=("b","g","r")
+            for (canal,color) in zip (canales_de_color,colores): #Zip es para recorrer dos listas al mismo tiempo
+                hist=cv2.calcHist([canal],[0], None, [256], [0,256])
+                ax[0,1].plot(hist,color=color)
+            #Subgrafica para ver sección de interes
+            ax[1,0].clear()#Limpiar la subgrafica
+            ax[1,0].imshow(CuadroI)
+            ax[1,0].axis('off')
+            ax[1,0].set_title("Video mano")
+            #Subgrafica para ver el histograma de la sección de interes
+            ax[1,1].clear()
+            ax[1,1].set_xlim([0,256])
+            ax[1,1].set_title("Histograma de la sección de la mano")
+            for (canal,color) in zip (canales_de_color_cuadro,colores): #Zip es para recorrer dos listas al mismo tiempo
+                hist=cv2.calcHist([canal],[0], None, [256], [0,256])
+                ax[1,1].plot(hist,color=color)
+            plt.pause(0.001)
         
         cv2.imshow("Video Original",frame)
 
@@ -141,14 +134,8 @@ else:
         if key==ord('q'):
             print("Se presiono{k}")
             break
-        if key==ord('w') and Fondo_Blanco is False:
+        if key==ord('w'):
             FCI=cv2.cvtColor(frameAux,cv2.COLOR_BGR2GRAY)
-            Fondo_Blanco=True
-        
-        #if key==ord('e') and Fondo_Blanco is True:
-            #cv2.destroyWindow("Mascara")
-            #Fondo_Blanco=False
-            #FCI=cv2.cvtColor(frameAux,cv2.COLOR_BGR2HSV)
 
 video.release()            
 cv2.destroyAllWindows()
