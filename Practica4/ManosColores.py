@@ -10,20 +10,20 @@ FCI=None
 Fondo_Blanco=False
 
 # Definir los rangos de colores en HSV
-Amar_bajo = np.array([15, 100, 100], np.uint8)
-Amar_alto = np.array([45, 255, 255], np.uint8)
+Amar_bajo = np.array([20, 50, 50], np.uint8)
+Amar_alto = np.array([40, 255, 255], np.uint8)
 
-Verde_bajo = np.array([46, 100, 100], np.uint8)
-Verde_alto = np.array([90, 225, 255], np.uint8)
+Verde_bajo = np.array([35, 50, 50], np.uint8)
+Verde_alto = np.array([85, 255, 255], np.uint8)
 
-Azul_bajo = np.array([91, 100, 100], np.uint8)
-Azul_alto = np.array([130, 225, 255], np.uint8)
+Azul_bajo = np.array([90, 50, 50], np.uint8)
+Azul_alto = np.array([130, 255, 255], np.uint8)
 
-rojo_bajo1 = np.array([0, 100, 100], np.uint8)
-rojo_alto1 = np.array([10, 225, 255], np.uint8)
+rojo_bajo1 = np.array([0, 50, 50], np.uint8)
+rojo_alto1 = np.array([10, 255, 255], np.uint8)
 
-rojo_bajo2 = np.array([175, 100, 100], np.uint8)
-rojo_alto2 = np.array([180, 225, 255], np.uint8)
+rojo_bajo2 = np.array([170, 50, 50], np.uint8)
+rojo_alto2 = np.array([180, 255, 255], np.uint8)
 
 # Rango de color para la piel en HSV
 piel_bajo = np.array([0, 20, 70], np.uint8)
