@@ -19,7 +19,7 @@ _, resultado = rna.predict(nueva_muestra)
 
 print("Resultado de la predicción:", resultado)
 
-img=cv2.imread('gato.jpg')
+img=cv2.imread('Practica7/gato.jpg')
 gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 bordes=cv2.Canny(gris, 100, 200)
