@@ -19,7 +19,10 @@ _, resultado = rna.predict(nueva_muestra)
 
 print("Resultado de la predicción:", resultado)
 
-img=cv2.imread('Practica7/gato.jpg')
+img = cv2.imread(r'c:\Users\PC\OneDrive\Documentos\Códigos\Octavo\PDI\Practicas-TMPI\Practica7\gato.jpg')
+if img is None:
+    print("Error: No se pudo cargar la imagen 'gato.jpg'")
+    exit()
 gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 bordes=cv2.Canny(gris, 100, 200)
@@ -30,7 +33,7 @@ _, clasificacion = rna.predict(puntos)
 # Dibujar puntos clasificados en la imagen
 for (x, y), clas in zip(puntos, clasificacion):
     color = (0, 255, 0) if clas > 0 else (0, 0, 255)
-    cv2.circle(img, (x, y), 5, color, -1)
+    cv2.circle(img, (int(x), int(y)), 1, color, -1)
 
 cv2.imshow('Clasificación RNA', img)
 cv2.waitKey(0)

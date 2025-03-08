@@ -13,7 +13,7 @@ rna.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP,0.1,0.1)
 rna.setTermCriteria((cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 10000, 0.01))
 rna.train(datos, cv2.ml.ROW_SAMPLE, etiquetas)
 
-img=cv2.imread('gato.jpg')
+img = cv2.imread(r'c:\Users\PC\OneDrive\Documentos\Códigos\Octavo\PDI\Practicas-TMPI\Practica7\perroygato2.jpg')
 img_copia = img.copy()
 
 def seleccionar_roi(event,x,y,flags,param):
@@ -33,7 +33,7 @@ pixeles = region_selecionada.reshape(-1,3).astype(np.float32)
 promedio_color=np.mean(pixeles, axis=0).reshape(1,-1).astype(np.float32)
 
 _, resultado = rna.predict(promedio_color)
-clasificacion = 'Perro' if resultado[0][0] > 0 else 'Gato'
+clasificacion = 'Gato' if resultado[0][0] > 0.5 else 'Perro'
 
 cv2.putText(img,clasificacion,(x,y),cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
 cv2.imshow('clasificación',img)
